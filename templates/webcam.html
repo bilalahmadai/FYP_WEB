@@ -56,10 +56,20 @@
       .home-btn:hover {
         color: whitesmoke;
       }
+      .day {
+        display: flex;
+
+        align-items: center;
+        justify-content: space-between;
+      }
     </style>
     <div class="container">
       <div class="box d-flex align-items-start">
         <div class="camBox">
+          <div class="day">
+            <h5>{{day}}</h5>
+            <h6>{{date}}</h6>
+          </div>
           <a
             href="/"
             class="btn btn-sm btn-primary align-self-start"
@@ -71,7 +81,7 @@
           </a>
           <img src="{{ url_for('video') }}" class="webcam rounded back-btn" />
         </div>
-        <div class="detailBox rounded mx-3 p-2">
+        <!-- <div class="detailBox rounded mx-3 p-2">
           <div class="backHome">
             <a
               href="/"
@@ -96,7 +106,7 @@
             <h5>Time:</h5>
             <h5>(10:00 - 11:30)</h5>
           </div>
-        </div>
+        </div> -->
       </div>
     </div>
   </body>
