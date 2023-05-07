@@ -108,9 +108,9 @@ def video():
 @app.route('/start_webcam')
 def new():
     print("new")
-    curDate='10/04/2023'
-    curDay='Monday'
-    return render_template('webcam.html' ,date=curDate, day= curDay)
+    cur_date=now.strftime('%d %b %Y')
+    cur_day = now.strftime("%A")
+    return render_template('webcam.html' ,date=cur_date, day= cur_day)
 # @app.route('/train')
 # def train():
 #     file = open(r'EncodeData.py', 'r').read()
