@@ -8,6 +8,9 @@ import face_recognition
 import numpy as np
 import cvzone 
 from db import rollNumGet
+import datetime
+now = datetime.datetime.now()
+# cur_time = now.strftime("%H:%M")
 
 
 
@@ -59,7 +62,10 @@ def generate_frames():
                 
                 if (matches[matchIndex]==True and A<B and A<=0.60):
                     # print(type(studentIDs[matchIndex]))
-                    rollNumGet(studentIDs[matchIndex])
+                    # cur_time = now.strftime("%H:%M")
+                    cur_time="10:35"
+
+                    rollNumGet(studentIDs[matchIndex],cur_time)
                     print("knownFace dis: ", faceDis[matchIndex])
                     cvzone.cornerRect(frame,bbox,rt=1,t=5,colorR=(220,218,168),colorC=(0,255,0))
                     cv.putText(frame,str(studentIDs[matchIndex]),(50+x1,140+y1-10),cv.FONT_HERSHEY_SIMPLEX,color=(0,255,0),fontScale=1,thickness=1)

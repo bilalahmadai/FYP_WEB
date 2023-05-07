@@ -19,11 +19,13 @@ from mySQL import *
 import datetime
 now = datetime.datetime.now()
 # cur_time = now.strftime("%H:%M")
-# cur_date=now.strftime('%Y-%m-%d')
-cur_date='2023-05-07'
-cur_time = '10:31'
-today="Tuseday"
-print(cur_time)
+cur_date=now.strftime('%Y-%m-%d')
+# cur_day = now.strftime("%A")
+
+# cur_date='2023-05-07'
+# cur_time = '10:31'
+cur_day="Tuseday"
+# print(cur_time)
 
 
 # rollNumID=9
@@ -33,7 +35,7 @@ print(cur_time)
 
 rec_list=[]
 print(rec_list)
-def mark_Attendance(path,r,courseFid,teacherFid):
+def mark_Attendance(path,r,courseFid,teacherFid,cur_time):
             with open(path,"r+",newline="\n") as f:
                 AttenList=f.readlines()
                 # rec_list=[]
@@ -65,7 +67,7 @@ def mark_Attendance(path,r,courseFid,teacherFid):
 
 
 # get student timetable
-def FindStudent(slotNum,rollNum):
+def FindStudent(slotNum,rollNum,cur_time):
     path='DummyAttendance/slot_'+str(slotNum)+'.csv'
     print("works",rollNum)
     sql="SELECT * FROM student_timetable WHERE student_id=%s"
@@ -118,11 +120,11 @@ def FindStudent(slotNum,rollNum):
         
         
         
-        if cur_time >slot_split[0] and cur_time <slot_split[1] and today==day_timetable:
+        if cur_time >slot_split[0] and cur_time <slot_split[1] and cur_day==day_timetable:
             print("yes Attendance Should mark here",slot_split[0])
             
               
-            mark_Attendance(path,rollNum,CourseFID[0],TeacherFID[0])
+            mark_Attendance(path,rollNum,CourseFID[0],TeacherFID[0],cur_time)
 
         else:
             print("notWorked",slot_split[0],"-",slot_split[1])
@@ -161,41 +163,42 @@ print(lec_off_time)
 
 # r='BCS19-028'
 
-def rollNumGet(rollno):
+def rollNumGet(rollno,cur_time):
     # r=str(rollno)
     r=rollno
     print(r)
     if cur_time >=lec_start_time[0] and cur_time <lec_off_time[0] :
         print("1st-lec",lec_start_time[0])
         path_slotNum=1
-        FindStudent(path_slotNum,r)
+        FindStudent(path_slotNum,r,cur_time)
     elif cur_time >=lec_start_time[1] and cur_time <lec_off_time[1]:
         print("2nd yes")
         path_slotNum=2
-        FindStudent(path_slotNum,r)
+        FindStudent(path_slotNum,r,cur_time)
     elif cur_time >=lec_start_time[2] and cur_time <lec_off_time[2]:
         print("3rd yes")
         path_slotNum=3
-        FindStudent(path_slotNum,r)
+        FindStudent(path_slotNum,r,cur_time)
     elif cur_time >=lec_start_time[3] and cur_time <lec_off_time[3]:
         print("4rth yes")
         path_slotNum=4
-        FindStudent(path_slotNum,r)
+        FindStudent(path_slotNum,r,cur_time)
     elif cur_time >=lec_start_time[4] and cur_time <lec_off_time[4]:
         print("5th yes")
         path_slotNum=5
-        FindStudent(path_slotNum,r)
+        FindStudent(path_slotNum,r,cur_time)
     elif cur_time >=lec_start_time[5] and cur_time <lec_off_time[5]:
         print("6th yes")
         path_slotNum=6
-        FindStudent(path_slotNum,r)
+        FindStudent(path_slotNum,r,cur_time)
     elif cur_time >=lec_start_time[6] and cur_time <lec_off_time[6]:
         print("OFF 1st Shift")
+    
+    
+    elif cur_time >=lec_start_time[7] and cur_time <lec_off_time[7]:
+        print("off")
+        for i in range(1,6):
+            path='DummyAttendance/slot_'+str(i)+'.csv'
+            delete_all_rows(path)
     else:
         print("YOU ARE OUT OF TIME")
-    
-if cur_time >=lec_start_time[7] and cur_time <lec_off_time[7]:
-    print("off")
-    for i in range(1,6):
-        path='DummyAttendance/slot_'+str(i)+'.csv'
-        delete_all_rows(path)
