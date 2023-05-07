@@ -1,4 +1,4 @@
-from flask import Flask,render_template,Response,url_for
+from flask import Flask,render_template,Response,url_for,redirect
 import cv2
 from mySQL import *
 import cv2 as cv
@@ -7,6 +7,9 @@ import pickle
 import face_recognition
 import numpy as np
 import cvzone 
+from db import rollNumGet
+
+
 
 app=Flask(__name__)
 camera=cv2.VideoCapture(0)
@@ -55,6 +58,8 @@ def generate_frames():
                 
                 
                 if (matches[matchIndex]==True and A<B and A<=0.60):
+                    # print(type(studentIDs[matchIndex]))
+                    rollNumGet(studentIDs[matchIndex])
                     print("knownFace dis: ", faceDis[matchIndex])
                     cvzone.cornerRect(frame,bbox,rt=1,t=5,colorR=(220,218,168),colorC=(0,255,0))
                     cv.putText(frame,str(studentIDs[matchIndex]),(50+x1,140+y1-10),cv.FONT_HERSHEY_SIMPLEX,color=(0,255,0),fontScale=1,thickness=1)
@@ -99,5 +104,12 @@ def new():
     curDate='10/04/2023'
     curDay='Monday'
     return render_template('webcam.html' ,date=curDate, day= curDay)
+@app.route('/train')
+def train():
+    file = open(r'EncodeData.py', 'r').read()
+    exec(file)
+    
+    return redirect(url_for('index'))
+    
 if __name__=="__main__":
     app.run(debug=True)
