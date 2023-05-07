@@ -1,0 +1,63 @@
+<!-- loading.html -->
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Loading Page</title>
+    <style>
+      /* CSS styles for the progress bar */
+      .progress-bar {
+        width: 300px;
+        height: 30px;
+        border: 1px solid #ccc;
+        position: relative;
+      }
+
+      .progress {
+        background-color: #4caf50;
+        height: 100%;
+        width: 0;
+        position: absolute;
+      }
+
+      .progress-text {
+        color: #000;
+        text-align: center;
+        line-height: 30px;
+      }
+    </style>
+    <script>
+      // Create an EventSource object to listen for SSE events
+      var eventSource = new EventSource("/progress");
+
+      // Event listener for SSE messages
+      eventSource.onmessage = function (event) {
+        var data = event.data;
+
+        if (data === "redirect") {
+          // If a redirect event is received, redirect to the index page
+          window.location.href = "/";
+        } else {
+          // Update the loading progress using the received data
+          updateProgress(parseInt(data));
+        }
+      };
+
+      // Function to update the progress bar
+      function updateProgress(progress) {
+        var progressBar = document.getElementById("progress");
+        var progressText = document.getElementById("progress-text");
+
+        progressBar.style.width = progress + "%";
+        progressText.innerHTML = progress + "%";
+      }
+    </script>
+  </head>
+  <body>
+    <h1>Loading...</h1>
+    <div class="progress-bar">
+      <div id="progress" class="progress"></div>
+      <div id="progress-text" class="progress-text"></div>
+    </div>
+    <!-- Your loading page content goes here -->
+  </body>
+</html>

@@ -11,6 +11,7 @@ from db import rollNumGet
 import datetime
 now = datetime.datetime.now()
 # cur_time = now.strftime("%H:%M")
+import time
 
 
 
@@ -110,12 +111,34 @@ def new():
     curDate='10/04/2023'
     curDay='Monday'
     return render_template('webcam.html' ,date=curDate, day= curDay)
+# @app.route('/train')
+# def train():
+#     file = open(r'EncodeData.py', 'r').read()
+#     exec(file)
+    
+#     return redirect(url_for('index'))
+
+
 @app.route('/train')
 def train():
-    file = open(r'EncodeData.py', 'r').read()
-    exec(file)
-    
-    return redirect(url_for('index'))
+    return render_template('loading.html')
+
+@app.route('/progress')
+def progress():
+    def generate():
+        # Execute your long-running task here
+        file = open(r'EncodeData.py', 'r').read()
+        exec(file)
+        
+        # Generate progress updates
+        for progress in range(0, 101, 10):
+            yield f"data:{progress}\n\n"
+            time.sleep(1)
+
+        # Redirect to index page after completion
+        yield "data:redirect\n\n"
+
+    return Response(generate(), mimetype='text/event-stream')
     
 if __name__=="__main__":
     app.run(debug=True)
