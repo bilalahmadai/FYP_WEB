@@ -39,6 +39,7 @@ def generate_frames():
             faceCurLoc=face_recognition.face_locations(imgS)
             encodeCurFrame=face_recognition.face_encodings(imgS,faceCurLoc)
 
+
             for encodeFace, faceLoc in zip(encodeCurFrame,faceCurLoc):
                 matches=face_recognition.compare_faces(knownEncodeList,encodeFace)
                 faceDis=face_recognition.face_distance(knownEncodeList,encodeFace)
@@ -50,7 +51,7 @@ def generate_frames():
                 print("FacDisList",faceDis)
                 print("FacDis index ",faceDis[matchIndex])
 
-                # print("matchIndex",matchIndex)
+                print("matchIndex",matchIndex)
                 # print(type(faceDis))
 
                 A, B = np.partition(faceDis, 1)[0:2]
@@ -61,7 +62,7 @@ def generate_frames():
                 bbox= x1,y1,x2-x1,y2-y1
                 
                 
-                if (matches[matchIndex]==True and A<B and A<=0.60):
+                if matches[matchIndex] and faceDis[matchIndex] < 0.40:
                     # print(type(studentIDs[matchIndex]))
                     # cur_time = now.strftime("%H:%M")
                     cur_time="10:35"
