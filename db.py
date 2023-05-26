@@ -24,7 +24,7 @@ cur_date=now.strftime('%Y-%m-%d')
 
 # cur_date='2023-05-07'
 # cur_time = '10:31'
-cur_day="Tuseday"
+cur_day="monday"
 # print(cur_time)
 
 

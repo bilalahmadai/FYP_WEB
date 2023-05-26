@@ -62,15 +62,19 @@ def generate_frames():
                 bbox= x1,y1,x2-x1,y2-y1
                 
                 
-                if matches[matchIndex] and faceDis[matchIndex] < 0.40:
+                # if matches[matchIndex] and faceDis[matchIndex] < 0.40:
+                if matches[matchIndex]:
                     # print(type(studentIDs[matchIndex]))
                     # cur_time = now.strftime("%H:%M")
                     cur_time="10:35"
+                    mycursor.execute("SELECT rollno FROM stdrecord WHERE id="+str(studentIDs[matchIndex]))
+                    r_no = mycursor.fetchone()
+                    r_no = "+".join(r_no)
 
                     rollNumGet(studentIDs[matchIndex],cur_time)
                     print("knownFace dis: ", faceDis[matchIndex])
                     cvzone.cornerRect(frame,bbox,rt=1,t=5,colorR=(220,218,168),colorC=(0,255,0))
-                    cv.putText(frame,str(studentIDs[matchIndex]),(50+x1,140+y1-10),cv.FONT_HERSHEY_SIMPLEX,color=(0,255,0),fontScale=1,thickness=1)
+                    cv.putText(frame,r_no,(50+x1,140+y1-10),cv.FONT_HERSHEY_SIMPLEX,color=(0,255,0),fontScale=1,thickness=1)
 
                 else:
                 # print("UnKnownFace")
@@ -91,15 +95,7 @@ def generate_frames():
 
 @app.route('/')
 def index():
-    print("index")
-    mycursor.execute('''SELECT asheet.id, student.name, student.roll_no, course.name, teacher.name, asheet.date, asheet.lec_num, asheet.attendance_status FROM attendance_sheet asheet
-    INNER JOIN student ON asheet.student_id = student.id
-    INNER JOIN course ON asheet.course_id = course.id
-    INNER JOIN teacher ON asheet.teacher_id = teacher.id
-    ORDER BY asheet.lec_num DESC''')
-    data = mycursor.fetchall()
-    # print(data)
-    
+    camera.release()
     return render_template('list.html', attSheet=data)
 
 
@@ -109,6 +105,8 @@ def video():
 @app.route('/start_webcam')
 def new():
     print("new")
+    camera=cv2.VideoCapture(0)
+
     cur_date=now.strftime('%d %b %Y')
     cur_day = now.strftime("%A")
     return render_template('webcam.html' ,date=cur_date, day= cur_day)
