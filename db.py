@@ -1,5 +1,6 @@
 # import mysql.connector
 from mySQL import *
+from slot_path import findSlot
 
 # dbconn = mysql.connector.connect(
 #     host="localhost",
@@ -171,6 +172,7 @@ def rollNumGet(rollno,cur_time):
         print("1st-lec",lec_start_time[0])
         path_slotNum=1
         FindStudent(path_slotNum,r,cur_time)
+        findSlot(path_slotNum)
     elif cur_time >=lec_start_time[1] and cur_time <lec_off_time[1]:
         print("2nd yes")
         path_slotNum=2

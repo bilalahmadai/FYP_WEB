@@ -1,7 +1,7 @@
-# from db import rollNumGet
+from db import rollNumGet
 from mySQL import *
 rollno='5'
-cur_time='18:31'
+cur_time='08:31'
 
 import datetime
 now = datetime.datetime.now()
@@ -26,12 +26,29 @@ now = datetime.datetime.now()
 #     print("yes")
 # ---------------------------------------------------
 
-s=1
-def slotPath(slot_no):
-    s=slot_no
-    path='DummyAttendance/slot_'+str(slot_no)+'.csv'
-    return path
-slot_path=slotPath()
-print(slot_path)
+# s=1
+# def slotPath(slot_no):
+#     s=slot_no
+#     path='DummyAttendance/slot_'+str(slot_no)+'.csv'
+#     return path
+# slot_path=slotPath()
+# print(slot_path)
 
+
+marked_sheet=[]
+path='DummyAttendance/slot_'+str(1)+'.csv'
+
+with open(path,"r+",newline="\n") as f:
+    AttenList=f.readlines()
+    # rec_list=[]
+    for line in AttenList:
+        entry=line.split(",")
+        marked_sheet.append(entry[0])
+
+print(marked_sheet)
+if rollno in marked_sheet:
+    print("marked")
+else:
+    print("Attendance marking...")
+    rollNumGet(rollno,cur_time) 
 
