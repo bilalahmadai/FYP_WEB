@@ -7,7 +7,7 @@ import pickle
 import face_recognition
 import numpy as np
 import cvzone 
-# from db import rollNumGet
+from db import rollNumGet
 import datetime
 now = datetime.datetime.now()
 # cur_time = now.strftime("%H:%M")
@@ -31,8 +31,21 @@ qrcode_list=[]
 for i in id_list:
     print(i[0])
     qrcode_list.append(str(i[0]))
+marked_sheet=[]
+path='DummyAttendance/slot_'+str(1)+'.csv'
 
-                    
+with open(path,"r+",newline="\n") as f:
+    AttenList=f.readlines()
+    # rec_list=[]
+    for line in AttenList:
+        entry=line.split(",")
+        marked_sheet.append(entry[0])
+                
+
+
+
+
+
     
 def generate_frames():
     camera=cv2.VideoCapture(0)
@@ -59,19 +72,18 @@ def generate_frames():
                     # qrTxt='Registerd'
                     qrColor=(0,255,0)
                     # cur_time = now.strftime("%H:%M")
-                    cur_time="10:35"
+                    cur_time="08:35"
                     mycursor.execute("SELECT roll_no FROM student WHERE id="+myData)
                     r_no = mycursor.fetchone()
-                    qrTxt = "+".join(r_no)
-                    if myData in sheet_list:
-                        qrTxt ="Attendance Marked"
+                    r_no = "+".join(r_no)
+                    qrTxt=r_no
+
+                    if myData in marked_sheet:
+                        qrTxt ="Attendance Marked "+r_no
+                        qrColor=(0,0,255)
+
                     else:
-                    # rollNumGet(studentIDs[matchIndex],cur_time)
-                        pass
-
-                    
-
-
+                        rollNumGet(myData,cur_time)
 
 
                 else:
@@ -118,15 +130,24 @@ def generate_frames():
                 if matches[matchIndex]:
                     # print(type(studentIDs[matchIndex]))
                     # cur_time = now.strftime("%H:%M")
-                    cur_time="10:35"
+                    boxColor=(0,255,0)
+
+                    cur_time="08:35"
                     mycursor.execute("SELECT roll_no FROM student WHERE id="+str(studentIDs[matchIndex]))
                     r_no = mycursor.fetchone()
                     r_no = "+".join(r_no)
+                    faceTxt=r_no
+                    if r_no in marked_sheet:
+                        faceTxt ="Attendance Marked "+r_no
+                        boxColor=(0,0,255)
 
-                    # rollNumGet(studentIDs[matchIndex],cur_time)
+                    else:
+                        rollNumGet(studentIDs[matchIndex],cur_time)
+
+                    
                     print("knownFace dis: ", faceDis[matchIndex])
-                    cvzone.cornerRect(frame,bbox,rt=1,t=5,colorR=(220,218,168),colorC=(0,255,0))
-                    cv.putText(frame,f'{r_no}',(50+x1,140+y1-10),cv.FONT_HERSHEY_SIMPLEX,color=(0,255,0),fontScale=1,thickness=1)
+                    cvzone.cornerRect(frame,bbox,rt=1,t=5,colorR=(220,218,168),colorC=boxColor)
+                    cv.putText(frame,f'{faceTxt}',(50+x1,140+y1-10),cv.FONT_HERSHEY_SIMPLEX,color=boxColor,fontScale=1,thickness=1)
 
                 else:
                 # print("UnKnownFace")
