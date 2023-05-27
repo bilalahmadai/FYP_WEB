@@ -7,12 +7,13 @@ import pickle
 import face_recognition
 import numpy as np
 import cvzone 
-from db import rollNumGet
+# from db import rollNumGet
 import datetime
 now = datetime.datetime.now()
 # cur_time = now.strftime("%H:%M")
 import time
 
+from pyzbar.pyzbar import decode
 
 
 app=Flask(__name__)
@@ -24,7 +25,18 @@ file.close()
 print("Encoded File Loaded")
 knownEncodeList,studentIDs = model
 
+mycursor.execute("SELECT id FROM student")
+id_list = mycursor.fetchall()
+qrcode_list=[]
+for i in id_list:
+    print(i[0])
+    qrcode_list.append(str(i[0]))
+
+                    
+    
 def generate_frames():
+    camera=cv2.VideoCapture(0)
+
     while True:
             
         ## read the camera frame
@@ -35,6 +47,46 @@ def generate_frames():
             #face recognition----
             imgS=cv.resize(frame,(0,0),None,0.25,0.25)
             imgS=cv.cvtColor(imgS,cv.COLOR_BGR2RGB)
+            # -----------------QR CODE--------------
+
+            for qrcode in decode(frame):
+                qrcode.data
+                myData=qrcode.data.decode('utf-8')
+                # print(myData)
+                # myData= myData.split('+')
+                # print(myData[1])
+                if myData in qrcode_list:
+                    # qrTxt='Registerd'
+                    qrColor=(0,255,0)
+                    # cur_time = now.strftime("%H:%M")
+                    cur_time="10:35"
+                    mycursor.execute("SELECT roll_no FROM student WHERE id="+myData)
+                    r_no = mycursor.fetchone()
+                    qrTxt = "+".join(r_no)
+                    if myData in sheet_list:
+                        qrTxt ="Attendance Marked"
+                    else:
+                    # rollNumGet(studentIDs[matchIndex],cur_time)
+                        pass
+
+                    
+
+
+
+
+                else:
+                    qrTxt='*Not Found'
+                    qrColor=(0,0,255)
+                pts=np.array([qrcode.polygon],np.int32)
+                pts=pts.reshape((-1,1,2))
+                cv.polylines(frame,[pts],True,qrColor,5)
+
+                pts2 =qrcode.rect
+                cv.putText(frame,qrTxt,(pts2[0],pts2[1]-10),cv.FONT_HERSHEY_SIMPLEX,color=(255,0,255),fontScale=0.5,thickness=1)
+
+
+            # ---------End--------QR CODE--------------
+
 
             faceCurLoc=face_recognition.face_locations(imgS)
             encodeCurFrame=face_recognition.face_encodings(imgS,faceCurLoc)
@@ -67,14 +119,14 @@ def generate_frames():
                     # print(type(studentIDs[matchIndex]))
                     # cur_time = now.strftime("%H:%M")
                     cur_time="10:35"
-                    mycursor.execute("SELECT rollno FROM stdrecord WHERE id="+str(studentIDs[matchIndex]))
+                    mycursor.execute("SELECT roll_no FROM student WHERE id="+str(studentIDs[matchIndex]))
                     r_no = mycursor.fetchone()
                     r_no = "+".join(r_no)
 
-                    rollNumGet(studentIDs[matchIndex],cur_time)
+                    # rollNumGet(studentIDs[matchIndex],cur_time)
                     print("knownFace dis: ", faceDis[matchIndex])
                     cvzone.cornerRect(frame,bbox,rt=1,t=5,colorR=(220,218,168),colorC=(0,255,0))
-                    cv.putText(frame,r_no,(50+x1,140+y1-10),cv.FONT_HERSHEY_SIMPLEX,color=(0,255,0),fontScale=1,thickness=1)
+                    cv.putText(frame,f'{r_no}',(50+x1,140+y1-10),cv.FONT_HERSHEY_SIMPLEX,color=(0,255,0),fontScale=1,thickness=1)
 
                 else:
                 # print("UnKnownFace")
