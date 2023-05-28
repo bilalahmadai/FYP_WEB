@@ -17,7 +17,9 @@ from pyzbar.pyzbar import decode
 
 
 app=Flask(__name__)
-camera=cv2.VideoCapture(0)
+# cur_time = now.strftime("%H:%M")
+cur_time="08:35"
+
 print("Encoded File Loading...")
 file=open("EncodeFile.p","rb")
 model=pickle.load(file)
@@ -31,9 +33,29 @@ qrcode_list=[]
 for i in id_list:
     print(i[0])
     qrcode_list.append(str(i[0]))
-marked_sheet=[]
-path='DummyAttendance/slot_'+str(1)+'.csv'
 
+sql="SELECT * FROM slot"
+mycursor.execute(sql)
+mySlot_time = mycursor.fetchall()
+lec_start_time=[]
+lec_off_time=[]
+for time in mySlot_time:
+    lec_start_time.append(time[2].split('-')[0])  
+    lec_off_time.append(time[2].split('-')[1])
+if cur_time >=lec_start_time[0] and cur_time <lec_off_time[0] :
+    path_slotNum=1
+elif cur_time >=lec_start_time[1] and cur_time <lec_off_time[1]:
+    path_slotNum=2
+elif cur_time >=lec_start_time[2] and cur_time <lec_off_time[2]:
+    path_slotNum=3
+elif cur_time >=lec_start_time[3] and cur_time <lec_off_time[3]:
+    path_slotNum=4
+elif cur_time >=lec_start_time[4] and cur_time <lec_off_time[4]:
+    path_slotNum=5
+elif cur_time >=lec_start_time[5] and cur_time <lec_off_time[5]:
+    path_slotNum=6
+marked_sheet=[]
+path='DummyAttendance/slot_'+str(path_slotNum)+'.csv'
 with open(path,"r+",newline="\n") as f:
     AttenList=f.readlines()
     # rec_list=[]
@@ -71,8 +93,7 @@ def generate_frames():
                 if myData in qrcode_list:
                     # qrTxt='Registerd'
                     qrColor=(0,255,0)
-                    # cur_time = now.strftime("%H:%M")
-                    cur_time="08:35"
+                    
                     mycursor.execute("SELECT roll_no FROM student WHERE id="+myData)
                     r_no = mycursor.fetchone()
                     r_no = "+".join(r_no)
@@ -129,10 +150,10 @@ def generate_frames():
                 # if matches[matchIndex] and faceDis[matchIndex] < 0.40:
                 if matches[matchIndex]:
                     # print(type(studentIDs[matchIndex]))
-                    # cur_time = now.strftime("%H:%M")
+                    
                     boxColor=(0,255,0)
 
-                    cur_time="08:35"
+                    
                     mycursor.execute("SELECT roll_no FROM student WHERE id="+str(studentIDs[matchIndex]))
                     r_no = mycursor.fetchone()
                     r_no = "+".join(r_no)
