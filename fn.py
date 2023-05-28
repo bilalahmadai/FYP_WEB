@@ -35,20 +35,24 @@ now = datetime.datetime.now()
 # print(slot_path)
 
 
-marked_sheet=[]
-path='DummyAttendance/slot_'+str(1)+'.csv'
+# marked_sheet=[]
+# path='DummyAttendance/slot_'+str(1)+'.csv'
 
-with open(path,"r+",newline="\n") as f:
-    AttenList=f.readlines()
-    # rec_list=[]
-    for line in AttenList:
-        entry=line.split(",")
-        marked_sheet.append(entry[0])
+# with open(path,"r+",newline="\n") as f:
+#     AttenList=f.readlines()
+#     # rec_list=[]
+#     for line in AttenList:
+#         entry=line.split(",")
+#         marked_sheet.append(entry[0])
 
-print(marked_sheet)
-if rollno in marked_sheet:
-    print("marked")
-else:
-    print("Attendance marking...")
-    rollNumGet(rollno,cur_time) 
-
+# print(marked_sheet)
+# if rollno in marked_sheet:
+#     print("marked")
+# else:
+#     print("Attendance marking...")
+#     rollNumGet(rollno,cur_time) 
+import datetime
+import time
+for i in range(100):
+    print(i)
+    time.sleep(2)
