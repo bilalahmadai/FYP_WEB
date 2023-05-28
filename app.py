@@ -17,6 +17,8 @@ from pyzbar.pyzbar import decode
 
 
 app=Flask(__name__)
+camera=cv2.VideoCapture(0)
+
 # cur_time = now.strftime("%H:%M")
 cur_time="08:35"
 
@@ -39,9 +41,9 @@ mycursor.execute(sql)
 mySlot_time = mycursor.fetchall()
 lec_start_time=[]
 lec_off_time=[]
-for time in mySlot_time:
-    lec_start_time.append(time[2].split('-')[0])  
-    lec_off_time.append(time[2].split('-')[1])
+for slot_time in mySlot_time:
+    lec_start_time.append(slot_time[2].split('-')[0])  
+    lec_off_time.append(slot_time[2].split('-')[1])
 if cur_time >=lec_start_time[0] and cur_time <lec_off_time[0] :
     path_slotNum=1
 elif cur_time >=lec_start_time[1] and cur_time <lec_off_time[1]:
@@ -220,13 +222,15 @@ def train():
 def progress():
     def generate():
         # Execute your long-running task here
-        file = open(r'EncodeData.py', 'r').read()
-        exec(file)
+        # file = open(r'EncodeData.py', 'r').read()
+        # exec(file)
         
         # Generate progress updates
         for progress in range(0, 101, 10):
-            yield f"data:{progress}\n\n"
             time.sleep(1)
+
+            yield f"data:{progress}\n\n"
+            # time.sleep(1.5)
 
         # Redirect to index page after completion
         yield "data:redirect\n\n"
