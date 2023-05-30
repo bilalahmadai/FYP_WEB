@@ -25,7 +25,7 @@ cur_date=now.strftime('%Y-%m-%d')
 
 # cur_date='2023-05-07'
 # cur_time = '10:31'
-cur_day="monday"
+cur_day="Monday"
 # print(cur_time)
 
 
@@ -44,7 +44,6 @@ def mark_Attendance(path,r,courseFid,teacherFid,cur_time):
                     entry=line.split(",")
                     rec_list.append(entry[0])
                 if (r not in rec_list):
-                    f.writelines(f"\n{r},{cur_time}")
                     
                     # INSERT REC IN DB
                     mycursor.execute("SELECT MAX(lec_num) FROM attendance_sheet WHERE student_id=%s AND course_id=%s AND teacher_id=%s", (r,courseFid,teacherFid))
@@ -61,6 +60,8 @@ def mark_Attendance(path,r,courseFid,teacherFid,cur_time):
                     val = (r, courseFid,teacherFid,cur_date,lecNum,"P")
                     mycursor.execute(sql, val)
                     dbconn.commit()
+                    f.writelines(f"\n{r},{cur_time}")
+
                    
 
                     
@@ -70,28 +71,28 @@ def mark_Attendance(path,r,courseFid,teacherFid,cur_time):
 # get student timetable
 def FindStudent(slotNum,rollNum,cur_time):
     path='DummyAttendance/slot_'+str(slotNum)+'.csv'
-    print("works",rollNum)
+    print("find Studen... works",rollNum)
     sql="SELECT * FROM student_timetable WHERE student_id=%s"
     val=(rollNum,)
     mycursor.execute(sql,val)
     student_timetable = mycursor.fetchall()
-    print(student_timetable)   # id, student_id, timetable_id  [(1, 1, 45)]
+    print("student_timetable   ",student_timetable)   # id, student_id, timetable_id  [(1, 1, 45)]
     # timeTable_FID=student_timetable[0][2]
 
     for slt_fid in student_timetable:
-        print(slt_fid[2])
+        print("Timetable ID",slt_fid[2])
         timeTable_FID=slt_fid[2]
     # get timetable of specific student through tbl of student_timetable
         sql="SELECT * FROM time_table WHERE id=%s"
         val=(timeTable_FID,)
         mycursor.execute(sql,val)
         timetable = mycursor.fetchall()
-        print(timetable) #id,course_id,slot_id,day,teacher_id   [(45, 1, 1, 'Monday', 1)]
+        print('timetable  ',timetable) #id,course_id,slot_id,day,teacher_id   [(45, 1, 1, 'Monday', 1)]
         course_fid=timetable[0][1]
         slot_fid=timetable[0][2]
 
         day_timetable=timetable[0][3]
-        print(day_timetable)
+        print('day_timetable   ',day_timetable)
 
         teacher_fid=timetable[0][4]
         sql="SELECT * FROM course WHERE id=%s"
@@ -121,7 +122,7 @@ def FindStudent(slotNum,rollNum,cur_time):
         
         
         
-        if cur_time >slot_split[0] and cur_time <slot_split[1] and cur_day==day_timetable:
+        if cur_time >slot_split[0] and cur_time <slot_split[1] and cur_day.lower()==day_timetable.lower():
             print("yes Attendance Should mark here",slot_split[0])
             
               
@@ -165,9 +166,8 @@ print(lec_off_time)
 # r='BCS19-028'
 
 def rollNumGet(rollno,cur_time):
-    # r=str(rollno)
+    
     r=rollno
-    print(r)
     if cur_time >=lec_start_time[0] and cur_time <lec_off_time[0] :
         print("1st-lec",lec_start_time[0])
         path_slotNum=1
@@ -199,7 +199,7 @@ def rollNumGet(rollno,cur_time):
     
     elif cur_time >=lec_start_time[7] and cur_time <lec_off_time[7]:
         print("off")
-        for i in range(1,6):
+        for i in range(1,7):
             path='DummyAttendance/slot_'+str(i)+'.csv'
             delete_all_rows(path)
     else:

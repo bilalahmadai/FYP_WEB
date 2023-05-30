@@ -1,6 +1,6 @@
 from db import rollNumGet
 from mySQL import *
-rollno='5'
+rollno='18'
 cur_time='08:31'
 
 import datetime
@@ -8,6 +8,8 @@ now = datetime.datetime.now()
 # cur_time = now.strftime("%H:%M")
 
 # rollNumGet(rollno,cur_time)
+d="Monday"
+print(d.lower())
 
 # mycursor.execute("SELECT roll_no FROM student WHERE id="+str(18))
 # r_no = mycursor.fetchone()
@@ -51,8 +53,18 @@ now = datetime.datetime.now()
 # else:
 #     print("Attendance marking...")
 #     rollNumGet(rollno,cur_time) 
-import datetime
-import time
-for i in range(100):
-    print(i)
-    time.sleep(2)
+# import datetime
+# import time
+# for i in range(100):
+#     print(i)
+#     time.sleep(2)
+# mycursor.execute("SELECT roll_no FROM student WHERE id="+str(30))
+# r_no = mycursor.fetchone()
+# # r_no = "+".join(r_no)
+# if r_no :
+#     print("Ok")
+# else:
+#     print("Not Ok")
+# # print(r_no[0])
+# for i in range(1,7):
+#     print(i)
