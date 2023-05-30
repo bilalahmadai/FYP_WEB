@@ -39,7 +39,7 @@
       referrerpolicy="no-referrer"
     />
 
-    <title>Face Management</title>
+    <title>Attendance Sheet</title>
   </head>
 
   <body>
@@ -55,12 +55,14 @@
                 class="img-fluid px-3 py-3"
               />
               <h4 class="mb-0">Attendance Management</h4>
+
               <div class="tab my-3">
-                <a href="department.html">Departments</a>
+                <a href="/">Attendance Sheet</a>
               </div>
-              <div class="tab my-3"><a href="teacher.html">Teachers</a></div>
               <div class="tab my-3">
-                <a href="/">Face Management</a>
+                <a href="http://localhost/class_project/admin/slot/slot.php"
+                  >Management</a
+                >
               </div>
             </div>
           </div>
@@ -69,7 +71,7 @@
             <div class="row">
               <div class="col-md-6">
                 <div class="px-4">
-                  <h3 class="font-weight-bold my-4 py-1">Face Management</h3>
+                  <h3 class="font-weight-bold my-4 py-1">Attendance Sheet</h3>
                 </div>
               </div>
               <!-- search -->
@@ -91,18 +93,12 @@
                 <a href="/" class="btn btn-sm btn-dark">
                   <i class="fa-solid fa-users"></i> All
                 </a>
-                <a href="/registered" class="btn btn-sm btn-dark">
-                  <i class="fa-solid fa-users"></i> Registered
-                </a>
-                <a href="/not_registered" class="btn btn-sm btn-dark">
-                  <i class="fa-solid fa-users-slash"></i> Not Registered
-                </a>
               </div>
               <div>
                 <a
                   class="btn btn-sm btn-success"
-                  href="/train_data"
-                  onclick="return confirm('Train Data Model on Collection of Data') "
+                  href="/train"
+                  onclick="return confirm('Training Model, it might take time ') "
                   class="btn btn-sm btn-dark"
                   data-toggle="tooltip"
                   data-placement="top"
@@ -112,7 +108,7 @@
                 </a>
                 <a
                   href="/start_webcam"
-                  onclick="return confirm('Start Detection of Face to mark Attendance') "
+                  onclick="return confirm('Make Sure Your Camera is Connected') "
                   class="btn btn-sm btn-dark"
                   data-toggle="tooltip"
                   data-placement="top"
