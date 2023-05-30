@@ -36,34 +36,34 @@ for i in id_list:
     print(i[0])
     qrcode_list.append(str(i[0]))
 
-sql="SELECT * FROM slot"
-mycursor.execute(sql)
-mySlot_time = mycursor.fetchall()
-lec_start_time=[]
-lec_off_time=[]
-for slot_time in mySlot_time:
-    lec_start_time.append(slot_time[2].split('-')[0])  
-    lec_off_time.append(slot_time[2].split('-')[1])
-if cur_time >=lec_start_time[0] and cur_time <lec_off_time[0] :
-    path_slotNum=1
-elif cur_time >=lec_start_time[1] and cur_time <lec_off_time[1]:
-    path_slotNum=2
-elif cur_time >=lec_start_time[2] and cur_time <lec_off_time[2]:
-    path_slotNum=3
-elif cur_time >=lec_start_time[3] and cur_time <lec_off_time[3]:
-    path_slotNum=4
-elif cur_time >=lec_start_time[4] and cur_time <lec_off_time[4]:
-    path_slotNum=5
-elif cur_time >=lec_start_time[5] and cur_time <lec_off_time[5]:
-    path_slotNum=6
-marked_sheet=[]
-path='DummyAttendance/slot_'+str(path_slotNum)+'.csv'
-with open(path,"r+",newline="\n") as f:
-    AttenList=f.readlines()
-    # rec_list=[]
-    for line in AttenList:
-        entry=line.split(",")
-        marked_sheet.append(entry[0])
+# sql="SELECT * FROM slot"
+# mycursor.execute(sql)
+# mySlot_time = mycursor.fetchall()
+# lec_start_time=[]
+# lec_off_time=[]
+# for slot_time in mySlot_time:
+#     lec_start_time.append(slot_time[2].split('-')[0])  
+#     lec_off_time.append(slot_time[2].split('-')[1])
+# if cur_time >=lec_start_time[0] and cur_time <lec_off_time[0] :
+#     path_slotNum=1
+# elif cur_time >=lec_start_time[1] and cur_time <lec_off_time[1]:
+#     path_slotNum=2
+# elif cur_time >=lec_start_time[2] and cur_time <lec_off_time[2]:
+#     path_slotNum=3
+# elif cur_time >=lec_start_time[3] and cur_time <lec_off_time[3]:
+#     path_slotNum=4
+# elif cur_time >=lec_start_time[4] and cur_time <lec_off_time[4]:
+#     path_slotNum=5
+# elif cur_time >=lec_start_time[5] and cur_time <lec_off_time[5]:
+#     path_slotNum=6
+# marked_sheet=[]
+# path='DummyAttendance/slot_'+str(path_slotNum)+'.csv'
+# with open(path,"r+",newline="\n") as f:
+#     AttenList=f.readlines()
+#     # rec_list=[]
+#     for line in AttenList:
+#         entry=line.split(",")
+#         marked_sheet.append(entry[0])
                 
 
 
@@ -75,6 +75,35 @@ def generate_frames():
     camera=cv2.VideoCapture(0)
 
     while True:
+        sql="SELECT * FROM slot"
+        mycursor.execute(sql)
+        mySlot_time = mycursor.fetchall()
+        lec_start_time=[]
+        lec_off_time=[]
+        for slot_time in mySlot_time:
+            lec_start_time.append(slot_time[2].split('-')[0])  
+            lec_off_time.append(slot_time[2].split('-')[1])
+        if cur_time >=lec_start_time[0] and cur_time <lec_off_time[0] :
+            path_slotNum=1
+        elif cur_time >=lec_start_time[1] and cur_time <lec_off_time[1]:
+            path_slotNum=2
+        elif cur_time >=lec_start_time[2] and cur_time <lec_off_time[2]:
+            path_slotNum=3
+        elif cur_time >=lec_start_time[3] and cur_time <lec_off_time[3]:
+            path_slotNum=4
+        elif cur_time >=lec_start_time[4] and cur_time <lec_off_time[4]:
+            path_slotNum=5
+        elif cur_time >=lec_start_time[5] and cur_time <lec_off_time[5]:
+            path_slotNum=6
+        marked_sheet=[]
+        path='DummyAttendance/slot_'+str(path_slotNum)+'.csv'
+        with open(path,"r+",newline="\n") as f:
+            AttenList=f.readlines()
+            # rec_list=[]
+            for line in AttenList:
+                entry=line.split(",")
+                marked_sheet.append(entry[0])
+                        
             
         ## read the camera frame
         success,frame=camera.read()
@@ -92,21 +121,32 @@ def generate_frames():
                 # print(myData)
                 # myData= myData.split('+')
                 # print(myData[1])
+                qrTxt=""
+                a_marked_qr=""
+                qr_markedColor=(0,255,0)
                 if myData in qrcode_list:
                     # qrTxt='Registerd'
                     qrColor=(0,255,0)
                     
                     mycursor.execute("SELECT roll_no FROM student WHERE id="+myData)
                     r_no = mycursor.fetchone()
-                    r_no = "+".join(r_no)
-                    qrTxt=r_no
+                    
+                    
+                    # if ture then check it in Sheet (available then Show marked otherwise Mark Attendance)
+                    if r_no:
+                        qrTxt=r_no[0]
+                         
+                        if myData in marked_sheet:
+                            a_marked_qr ="Attendance Marked"
+                            qr_markedColor=(70,57,230)
 
-                    if myData in marked_sheet:
-                        qrTxt ="Attendance Marked "+r_no
-                        qrColor=(0,0,255)
+                        else:
+                            a_marked_qr ="Marking..."
+                            # rollNumGet(myData,cur_time)
+                            pass
 
                     else:
-                        rollNumGet(myData,cur_time)
+                        a_marked_qr="No id found"
 
 
                 else:
@@ -117,7 +157,9 @@ def generate_frames():
                 cv.polylines(frame,[pts],True,qrColor,5)
 
                 pts2 =qrcode.rect
-                cv.putText(frame,qrTxt,(pts2[0],pts2[1]-10),cv.FONT_HERSHEY_SIMPLEX,color=(255,0,255),fontScale=0.5,thickness=1)
+                cv.putText(frame,f"{myData} {qrTxt}",(pts2[0],pts2[1]-10),cv.FONT_HERSHEY_SIMPLEX,color=qrColor,fontScale=1,thickness=2)
+                cv.putText(frame,a_marked_qr,(pts2[0],pts2[1]-50),cv.FONT_HERSHEY_SIMPLEX,color=qr_markedColor,fontScale=1,thickness=2)
+
 
 
             # ---------End--------QR CODE--------------
@@ -137,46 +179,55 @@ def generate_frames():
                 matchIndex=np.argmin(faceDis)
                 print("FacDisList",faceDis)
                 print("FacDis index ",faceDis[matchIndex])
-
                 print("matchIndex",matchIndex)
-                # print(type(faceDis))
-
-                A, B = np.partition(faceDis, 1)[0:2]
-                # print("1st = ",A)
-                # print("2nd = ",B)
+                
                 y1,x2,y2,x1=faceLoc
                 y1,x2,y2,x1=y1*4,x2*4,y2*4,x1*4
                 bbox= x1,y1,x2-x1,y2-y1
                 
                 
                 # if matches[matchIndex] and faceDis[matchIndex] < 0.40:
-                if matches[matchIndex]:
+                if matches[matchIndex] and faceDis[matchIndex] < 0.45:
                     # print(type(studentIDs[matchIndex]))
                     
                     boxColor=(0,255,0)
-
+                    infoColor=(255, 164, 87)
+                    markedColor=(0,255,0)
                     
                     mycursor.execute("SELECT roll_no FROM student WHERE id="+str(studentIDs[matchIndex]))
                     r_no = mycursor.fetchone()
-                    r_no = "+".join(r_no)
-                    faceTxt=r_no
-                    if r_no in marked_sheet:
-                        faceTxt ="Attendance Marked "+r_no
-                        boxColor=(0,0,255)
+                    r_txt=""
+                    a_marked=""
+                    # if ture then check it in Sheet (available then Show marked otherwise Mark Attendance)
+                    if r_no:
+                        r_txt= r_no[0] #BCS19-028
+                        if str(studentIDs[matchIndex]) in marked_sheet:
+                            a_marked ="Attendance Marked"
+                            markedColor=(70,57,230)
 
+                        else:
+                            a_marked ="Marking..."
+                            rollNumGet(studentIDs[matchIndex],cur_time)
+                            pass
                     else:
-                        rollNumGet(studentIDs[matchIndex],cur_time)
+                        r_txt="No id found"
+
+                    faceTxt=f"{r_txt}"
+                    infoTxt=f"id: {str(studentIDs[matchIndex])}, dis: {str(round(faceDis[matchIndex],2))}"
+                   
 
                     
                     print("knownFace dis: ", faceDis[matchIndex])
                     cvzone.cornerRect(frame,bbox,rt=1,t=5,colorR=(220,218,168),colorC=boxColor)
-                    cv.putText(frame,f'{faceTxt}',(50+x1,140+y1-10),cv.FONT_HERSHEY_SIMPLEX,color=boxColor,fontScale=1,thickness=1)
+                    cv.putText(frame,f'{infoTxt}',(x1,y1-10),cv.FONT_HERSHEY_SIMPLEX,color=infoColor,fontScale=0.9,thickness=2)
+                    cv.putText(frame,f'{faceTxt}',(x1,y1+100),cv.FONT_HERSHEY_SIMPLEX,color=boxColor,fontScale=1,thickness=2)
+                    cv.putText(frame,f'{a_marked}',(x1,y2+30),cv.FONT_HERSHEY_SIMPLEX,color=markedColor,fontScale=1,thickness=2)
 
                 else:
                 # print("UnKnownFace")
                     cvzone.cornerRect(frame,bbox,rt=1,t=5,colorR=(70,57,230),colorC=(0,255,0))
 
-                    cv.putText(frame,'unKnown',(50+x1,140+y1-10),cv.FONT_HERSHEY_SIMPLEX,color=(70,57,230),fontScale=1,thickness=1)
+                    cv.putText(frame,'unKnown',(50+x1,140+y1-10),cv.FONT_HERSHEY_SIMPLEX,color=(70,57,230),fontScale=1,thickness=2)
             
             #end of face rec....
             ret,buffer=cv2.imencode('.jpg',frame)
@@ -192,6 +243,12 @@ def generate_frames():
 @app.route('/')
 def index():
     camera.release()
+    mycursor.execute('''SELECT asheet.id, student.name, student.roll_no, course.name, teacher.name, asheet.date, asheet.lec_num, asheet.attendance_status FROM attendance_sheet asheet
+    INNER JOIN student ON asheet.student_id = student.id
+    INNER JOIN course ON asheet.course_id = course.id
+    INNER JOIN teacher ON asheet.teacher_id = teacher.id
+    ORDER BY asheet.lec_num DESC''')
+    data = mycursor.fetchall()
     return render_template('list.html', attSheet=data)
 
 
