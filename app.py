@@ -110,6 +110,7 @@ def generate_frames():
         if not success:
             break
         else:
+            frame = cv.flip(frame, 1)
             #face recognition----
             imgS=cv.resize(frame,(0,0),None,0.25,0.25)
             imgS=cv.cvtColor(imgS,cv.COLOR_BGR2RGB)
@@ -243,12 +244,14 @@ def generate_frames():
 @app.route('/')
 def index():
     camera.release()
+    print("home")
     mycursor.execute('''SELECT asheet.id, student.name, student.roll_no, course.name, teacher.name, asheet.date, asheet.lec_num, asheet.attendance_status FROM attendance_sheet asheet
     INNER JOIN student ON asheet.student_id = student.id
     INNER JOIN course ON asheet.course_id = course.id
     INNER JOIN teacher ON asheet.teacher_id = teacher.id
     ORDER BY asheet.lec_num DESC''')
     data = mycursor.fetchall()
+    dbconn.commit()
     return render_template('list.html', attSheet=data)
 
 
@@ -279,8 +282,8 @@ def train():
 def progress():
     def generate():
         # Execute your long-running task here
-        # file = open(r'EncodeData.py', 'r').read()
-        # exec(file)
+        file = open(r'EncodeData.py', 'r').read()
+        exec(file)
         
         # Generate progress updates
         for progress in range(0, 101, 10):

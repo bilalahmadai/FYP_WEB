@@ -1,6 +1,6 @@
 from db import rollNumGet
 from mySQL import *
-rollno='18'
+rollno='192'
 cur_time='08:31'
 
 import datetime

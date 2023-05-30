@@ -35,7 +35,7 @@ cur_day="Monday"
 
 
 rec_list=[]
-print(rec_list)
+print('rec_list   ',rec_list)
 def mark_Attendance(path,r,courseFid,teacherFid,cur_time):
             with open(path,"r+",newline="\n") as f:
                 AttenList=f.readlines()
@@ -118,7 +118,7 @@ def FindStudent(slotNum,rollNum,cur_time):
         mycursor.execute(sql,val)
         Slot_FID = mycursor.fetchone()
         slot_split=Slot_FID[2].split("-")
-        print(slot_split,slot_split[0]) #['08:30', '10:00am'] 08:30
+        print("time of slot_id  ",slot_split,slot_split[0]) #['08:30', '10:00am'] 08:30
         
         
         
