@@ -48,12 +48,13 @@ def mark_Attendance(path,r,courseFid,teacherFid,cur_time):
                     # INSERT REC IN DB
                     mycursor.execute("SELECT MAX(lec_num) FROM attendance_sheet WHERE student_id=%s AND course_id=%s AND teacher_id=%s", (r,courseFid,teacherFid))
                     result = mycursor.fetchone()
+                    print("type----------",type(result[0]))
                     if result[0] is None:
                     # If this is the first time the student is attending the lecture, set the lecture number to 1
                         lecNum = 1
                     else:
                     # Otherwise, increment the lecture number
-                        lecNum = result[0] + 1
+                        lecNum = int(result[0]) + 1
                     
                  
                     sql = "INSERT INTO attendance_sheet (student_id, course_id, teacher_id, date, lec_num, attendance_status) VALUES (%s, %s, %s, %s, %s, %s)"

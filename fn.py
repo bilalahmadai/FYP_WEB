@@ -1,15 +1,15 @@
 from db import rollNumGet
 from mySQL import *
-rollno='192'
-cur_time='08:31'
+rollno='193'
+cur_time='12:31'
 
 import datetime
 now = datetime.datetime.now()
 # cur_time = now.strftime("%H:%M")
 
-# rollNumGet(rollno,cur_time)
-d="Monday"
-print(d.lower())
+rollNumGet(rollno,cur_time)
+# d="Monday"
+# print(d.lower())
 
 # mycursor.execute("SELECT roll_no FROM student WHERE id="+str(18))
 # r_no = mycursor.fetchone()
