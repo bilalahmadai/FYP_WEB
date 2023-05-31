@@ -20,7 +20,7 @@ app=Flask(__name__)
 camera=cv2.VideoCapture(0)
 
 # cur_time = now.strftime("%H:%M")
-cur_time="08:35"
+cur_time="12:35"
 
 print("Encoded File Loading...")
 file=open("EncodeFile.p","rb")
@@ -266,12 +266,10 @@ def new():
     cur_date=now.strftime('%d %b %Y')
     cur_day = now.strftime("%A")
     return render_template('webcam.html' ,date=cur_date, day= cur_day)
-# @app.route('/train')
-# def train():
-#     file = open(r'EncodeData.py', 'r').read()
-#     exec(file)
-    
-#     return redirect(url_for('index'))
+@app.route('/grid')
+def grid():
+
+    return render_template('grid.html' )
 
 
 @app.route('/train')
