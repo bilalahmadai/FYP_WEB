@@ -1,38 +1,39 @@
 from db import rollNumGet
 from mySQL import *
-rollno='193'
-cur_time='12:31'
+rollno='33'
+cur_time='10:40'
+rollNumGet(rollno,cur_time)
 
-sql="SELECT id FROM student"
-mycursor.execute(sql)
-student_all_ids=mycursor.fetchall()
-print("student_all_ids",student_all_ids)
+# sql="SELECT id FROM student"
+# mycursor.execute(sql)
+# student_all_ids=mycursor.fetchall()
+# print("student_all_ids",student_all_ids)
 
 
-rec_list=[]
-path='DummyAttendance/slot_'+str(1)+'.csv'
+# rec_list=[]
+# path='DummyAttendance/slot_'+str(1)+'.csv'
 
-with open(path,"r+",newline="\n") as f:
-        AttenList=f.readlines()
-        # rec_list=[]
-        for line in AttenList:
-            entry=line.split(",")
-            rec_list.append(entry[0])
-print(rec_list)
-not_marked=[]
-for s_id in student_all_ids:
-    # print(s_id[0])
-    if str(s_id[0]) in rec_list:
-        not_marked.append(str(s_id[0]))
-        print("not marked")
-    else:
-        print("marked")
+# with open(path,"r+",newline="\n") as f:
+#         AttenList=f.readlines()
+#         # rec_list=[]
+#         for line in AttenList:
+#             entry=line.split(",")
+#             rec_list.append(entry[0])
+# print(rec_list)
+# not_marked=[]
+# for s_id in student_all_ids:
+#     # print(s_id[0])
+#     if str(s_id[0]) not in rec_list:
+#         not_marked.append(str(s_id[0]))
+#         print("not marked")
+#     else:
+#         print("marked")
+# print('not_marked ',not_marked)
 # print(entry[0])PRINT()
 # import datetime
 # now = datetime.datetime.now()
 # # cur_time = now.strftime("%H:%M")
 
-# rollNumGet(rollno,cur_time)
 # d="Monday"
 # print(d.lower())
 
