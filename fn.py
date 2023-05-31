@@ -2,12 +2,22 @@ from db import rollNumGet
 from mySQL import *
 rollno='193'
 cur_time='12:31'
+rec_list=[]
+path='DummyAttendance/slot_'+str(1)+'.csv'
 
-import datetime
-now = datetime.datetime.now()
-# cur_time = now.strftime("%H:%M")
+with open(path,"r+",newline="\n") as f:
+        AttenList=f.readlines()
+        # rec_list=[]
+        for line in AttenList:
+            entry=line.split(",")
+            rec_list.append(entry[0])
+print(rec_list)
+# print(entry[0])PRINT()
+# import datetime
+# now = datetime.datetime.now()
+# # cur_time = now.strftime("%H:%M")
 
-rollNumGet(rollno,cur_time)
+# rollNumGet(rollno,cur_time)
 # d="Monday"
 # print(d.lower())
 
