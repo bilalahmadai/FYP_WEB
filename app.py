@@ -14,10 +14,11 @@ now = datetime.datetime.now()
 import time
 
 from pyzbar.pyzbar import decode
-
+# from absent import FindAbsentStudent
 
 app=Flask(__name__)
 camera=cv2.VideoCapture(0)
+now = datetime.datetime.now()
 
 # cur_time = now.strftime("%H:%M")
 cur_time="12:35"
@@ -68,21 +69,25 @@ for i in id_list:
 
 
 
-
+sql="SELECT * FROM slot"
+path_slotNum=1
+mycursor.execute(sql)
+mySlot_time = mycursor.fetchall()
+lec_start_time=[]
+lec_off_time=[]
+for slot_time in mySlot_time:
+    lec_start_time.append(slot_time[2].split('-')[0])  
+    lec_off_time.append(slot_time[2].split('-')[1])
 
     
 def generate_frames():
     camera=cv2.VideoCapture(0)
 
     while True:
-        sql="SELECT * FROM slot"
-        mycursor.execute(sql)
-        mySlot_time = mycursor.fetchall()
-        lec_start_time=[]
-        lec_off_time=[]
-        for slot_time in mySlot_time:
-            lec_start_time.append(slot_time[2].split('-')[0])  
-            lec_off_time.append(slot_time[2].split('-')[1])
+        # cur_time = now.strftime("%H:%M")
+        cur_time="18:35"
+        
+            # ----------------- Check for already Attendance marked --------------
         if cur_time >=lec_start_time[0] and cur_time <lec_off_time[0] :
             path_slotNum=1
         elif cur_time >=lec_start_time[1] and cur_time <lec_off_time[1]:
@@ -95,6 +100,10 @@ def generate_frames():
             path_slotNum=5
         elif cur_time >=lec_start_time[5] and cur_time <lec_off_time[5]:
             path_slotNum=6
+        elif cur_time >=lec_start_time[7] and cur_time <lec_off_time[7]:
+            # time.sleep(30)
+            rollNumGet("0",cur_time)
+            break
         marked_sheet=[]
         path='DummyAttendance/slot_'+str(path_slotNum)+'.csv'
         with open(path,"r+",newline="\n") as f:
@@ -103,13 +112,14 @@ def generate_frames():
             for line in AttenList:
                 entry=line.split(",")
                 marked_sheet.append(entry[0])
-                        
+            # ----------------- END  check for A marked --------------                
             
         ## read the camera frame
         success,frame=camera.read()
         if not success:
             break
         else:
+           
             frame = cv.flip(frame, 1)
             #face recognition----
             imgS=cv.resize(frame,(0,0),None,0.25,0.25)
@@ -136,7 +146,7 @@ def generate_frames():
                     # if ture then check it in Sheet (available then Show marked otherwise Mark Attendance)
                     if r_no:
                         qrTxt=r_no[0]
-                         
+                        
                         if myData in marked_sheet:
                             a_marked_qr ="Attendance Marked"
                             qr_markedColor=(70,57,230)
@@ -161,14 +171,10 @@ def generate_frames():
                 cv.putText(frame,f"{myData} {qrTxt}",(pts2[0],pts2[1]-10),cv.FONT_HERSHEY_SIMPLEX,color=qrColor,fontScale=1,thickness=2)
                 cv.putText(frame,a_marked_qr,(pts2[0],pts2[1]-50),cv.FONT_HERSHEY_SIMPLEX,color=qr_markedColor,fontScale=1,thickness=2)
 
-
-
             # ---------End--------QR CODE--------------
-
 
             faceCurLoc=face_recognition.face_locations(imgS)
             encodeCurFrame=face_recognition.face_encodings(imgS,faceCurLoc)
-
 
             for encodeFace, faceLoc in zip(encodeCurFrame,faceCurLoc):
                 matches=face_recognition.compare_faces(knownEncodeList,encodeFace)
@@ -215,7 +221,7 @@ def generate_frames():
 
                     faceTxt=f"{r_txt}"
                     infoTxt=f"id: {str(studentIDs[matchIndex])}, dis: {str(round(faceDis[matchIndex],2))}"
-                   
+                
 
                     
                     print("knownFace dis: ", faceDis[matchIndex])
@@ -233,7 +239,7 @@ def generate_frames():
             #end of face rec....
             ret,buffer=cv2.imencode('.jpg',frame)
             frame=buffer.tobytes()
-
+            
         yield(b'--frame\r\n'
                    b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
 
@@ -251,7 +257,7 @@ def index():
     INNER JOIN teacher ON asheet.teacher_id = teacher.id
     ORDER BY asheet.lec_num DESC''')
     data = mycursor.fetchall()
-    dbconn.commit()
+    # dbconn.commit()
     return render_template('list.html', attSheet=data)
 
 
