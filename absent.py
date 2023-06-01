@@ -122,6 +122,7 @@ print(lec_off_time)
 
 # marked_list=[]
 # not_marked=[]
+
 for slot_path_no in range(1,7):
     marked_list=[]
     not_marked=[]

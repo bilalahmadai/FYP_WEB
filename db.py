@@ -1,6 +1,11 @@
 # import mysql.connector
 from mySQL import *
+from absent import FindAbsentStudent
 
+sql="SELECT id FROM student"
+mycursor.execute(sql)
+student_all_ids=mycursor.fetchall()
+print("student_all_ids",student_all_ids)
 
 # dbconn = mysql.connector.connect(
 #     host="localhost",
@@ -199,7 +204,30 @@ def rollNumGet(rollno,cur_time):
     
     
     elif cur_time >=lec_start_time[7] and cur_time <lec_off_time[7]:
-        print("off")
+        for slot_path_no in range(1,7):
+            marked_list=[]
+            not_marked=[]
+            off_time=lec_off_time[slot_path_no-1]
+            print(f"starting file {slot_path_no:-^50}")
+            path='DummyAttendance/slot_'+str(slot_path_no)+'.csv'
+            with open(path,"r+",newline="\n") as f:
+                AttenList=f.readlines()
+                for line in AttenList:
+                    entry=line.split(",")
+                    marked_list.append(entry[0])
+            print('marked_list  ',marked_list)
+            print(f"off lecture {lec_off_time[slot_path_no-1]:=^20}")
+            for s_id in student_all_ids:
+                # print(s_id[0])
+                if str(s_id[0]) not in marked_list:
+                    not_marked.append(str(s_id[0]))
+                    # print("not marked  ",str(s_id[0]))
+                    FindAbsentStudent(slot_path_no,str(s_id[0]),off_time)
+                else:
+                    print("marked ",str(s_id[0]))
+            print('not_marked  ',not_marked)
+            
+        print(f" off{1:=^100}")
         for i in range(1,7):
             path='DummyAttendance/slot_'+str(i)+'.csv'
             delete_all_rows(path)

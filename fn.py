@@ -1,7 +1,7 @@
 from db import rollNumGet
 from mySQL import *
-rollno='33'
-cur_time='10:40'
+rollno='0'
+cur_time='18:40'
 rollNumGet(rollno,cur_time)
 
 # sql="SELECT id FROM student"
