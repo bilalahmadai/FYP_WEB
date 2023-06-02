@@ -1,4 +1,4 @@
-from flask import Flask,render_template,Response,url_for,redirect,request
+from flask import Flask,render_template,Response,url_for,redirect,request,session,g
 
 from mySQL import *
 import cv2 as cv
@@ -14,7 +14,7 @@ import time
 from pyzbar.pyzbar import decode
 
 app=Flask(__name__)
-# app.app_context().push() 
+app.secret_key='#bilal'
 camera=cv.VideoCapture(0)
 
 # cur_time = now.strftime("%H:%M")
@@ -342,9 +342,27 @@ def progress():
 
     return Response(generate(), mimetype='text/event-stream')
 
-@app.route('/managing_absent')
-def managing_absent():
-    return render_template('absent.html')
+@app.route('/login',methods=['GET', 'POST'])
+def login():
+    msj=''
+    if request.method == "POST":
+        mail=request.form['email']
+        password=request.form['password']
+        mycursor.execute("SELECT * FROM admin WHERE email=%s AND password=%s",(mail,password))
+        record=mycursor.fetchone()
+        if record:
+            session['loggedin']=True
+            session['email']=record[2]
+            return redirect(url_for('index'))
+        else:
+            msj="Email or Password Incorrect, Try Again!"
+    return render_template('login.html',message=msj)
+
+@app.route('/logout')
+def logout():
+    session.pop('loggedin',None)
+    session.pop('email',None)
+    return redirect(url_for('login'))
 
 if __name__=="__main__":
     app.run(debug=True)
