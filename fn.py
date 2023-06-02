@@ -1,9 +1,19 @@
-from db import rollNumGet
+# from db import rollNumGet
+import db
 from mySQL import *
-rollno='0'
-cur_time='18:40'
-rollNumGet(rollno,cur_time)
+# rollno='0'
+# cur_time='18:40'
+# db.rollNumGet(rollno,cur_time)
+import datetime
 
+# now = datetime.datetime.now()
+
+# cur_time = now.strftime("%H:%M")
+while True:
+    now = datetime.datetime.now()
+
+    cur_time = now.strftime("%H:%M")
+    print(cur_time)
 # sql="SELECT id FROM student"
 # mycursor.execute(sql)
 # student_all_ids=mycursor.fetchall()

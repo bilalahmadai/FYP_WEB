@@ -14,10 +14,7 @@
       rel="stylesheet"
       href="{{url_for('static',filename='scrollBar.css')}}"
     />
-    <link
-      rel="stylesheet"
-      href="{{url_for('static',filename='grid.css')}}"
-    />
+    <link rel="stylesheet" href="{{url_for('static',filename='grid.css')}}" />
     <link
       rel="stylesheet"
       href="{{url_for('static',filename='css/bootstrap.min.css')}}"
@@ -54,10 +51,14 @@
             class="col-md-2 container bg-dark text-white text-center sticky-top sidebar"
           >
             <div>
+              <a href="{{url_for('logout')}}" class="text-right">
+                <i class="fa-solid fa-sign-out"></i> All
+              </a>
               <img
                 src="../static/assets/images/pugc.png"
                 class="img-fluid px-3 py-3"
               />
+
               <h4 class="mb-0">Attendance Management</h4>
 
               <div class="tab my-3">
@@ -73,27 +74,47 @@
 
           <div class="col-md-10">
             <div class="row">
-              <div class="col-md-6">
+              <div class="col-md-7">
                 <div class="px-4">
                   <h3 class="font-weight-bold my-4 py-1">Attendance Sheet</h3>
                 </div>
               </div>
               <!-- search -->
-              <!-- <div class="col-md-6">
+              <div class="col-md-5">
                 <div class="px-4">
                   <div class="my-4">
-                    <input
-                      type="text"
-                      class="form-control"
-                      placeholder="Search.."
-                      style="border: 1px solid black"
-                    />
+                    <form action="{{url_for('search')}}" method="POST">
+                      <div class="d-flex">
+                        <input
+                          type="date"
+                          name="select_date"
+                          class="form-control"
+                          style="border: 1px solid black"
+                        />
+                        <input
+                          name="rollnum"
+                          type="text"
+                          class="form-control mx-1"
+                          placeholder="Roll Number"
+                          style="border: 1px solid black"
+                          required
+                        />
+                        <input
+                          type="submit"
+                          value="Find"
+                          class="btn btn-sm btn-dark"
+                        />
+                      </div>
+                    </form>
                   </div>
                 </div>
-              </div> -->
+              </div>
             </div>
             <div class="d-flex justify-content-between px-4">
               <div>
+                <a href="/today" class="btn btn-sm btn-dark">
+                  <i class="fa-solid fa-calendar-day"></i> Today
+                </a>
                 <a href="/" class="btn btn-sm btn-dark">
                   <i class="fa-solid fa-users"></i> All
                 </a>
