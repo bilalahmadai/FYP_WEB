@@ -1,5 +1,5 @@
-from flask import Flask,render_template,Response,url_for,redirect
-import cv2
+from flask import Flask,render_template,Response,url_for,redirect,request
+
 from mySQL import *
 import cv2 as cv
 
@@ -7,21 +7,18 @@ import pickle
 import face_recognition
 import numpy as np
 import cvzone 
-from db import rollNumGet
+import db
 import datetime
-now = datetime.datetime.now()
-# cur_time = now.strftime("%H:%M")
-import time
 
+import time
 from pyzbar.pyzbar import decode
-# from absent import FindAbsentStudent
 
 app=Flask(__name__)
-camera=cv2.VideoCapture(0)
-now = datetime.datetime.now()
+# app.app_context().push() 
+camera=cv.VideoCapture(0)
 
 # cur_time = now.strftime("%H:%M")
-cur_time="12:35"
+# cur_time="12:35"
 
 print("Encoded File Loading...")
 file=open("EncodeFile.p","rb")
@@ -81,11 +78,16 @@ for slot_time in mySlot_time:
 
     
 def generate_frames():
-    camera=cv2.VideoCapture(0)
+    camera=cv.VideoCapture(0)
 
     while True:
+        now = datetime.datetime.now()
+
         # cur_time = now.strftime("%H:%M")
-        cur_time="18:35"
+        # print(cur_time)
+        cur_time="13:05"
+        # print(cur_time)
+        path_slotNum=1
         
             # ----------------- Check for already Attendance marked --------------
         if cur_time >=lec_start_time[0] and cur_time <lec_off_time[0] :
@@ -101,9 +103,11 @@ def generate_frames():
         elif cur_time >=lec_start_time[5] and cur_time <lec_off_time[5]:
             path_slotNum=6
         elif cur_time >=lec_start_time[7] and cur_time <lec_off_time[7]:
-            # time.sleep(30)
-            rollNumGet("0",cur_time)
+            
+            db.rollNumGet("0",cur_time)
             break
+            
+            
         marked_sheet=[]
         path='DummyAttendance/slot_'+str(path_slotNum)+'.csv'
         with open(path,"r+",newline="\n") as f:
@@ -153,7 +157,7 @@ def generate_frames():
 
                         else:
                             a_marked_qr ="Marking..."
-                            # rollNumGet(myData,cur_time)
+                            db.rollNumGet(myData,cur_time)
                             pass
 
                     else:
@@ -214,7 +218,7 @@ def generate_frames():
 
                         else:
                             a_marked ="Marking..."
-                            rollNumGet(studentIDs[matchIndex],cur_time)
+                            db.rollNumGet(studentIDs[matchIndex],cur_time)
                             pass
                     else:
                         r_txt="No id found"
@@ -237,28 +241,68 @@ def generate_frames():
                     cv.putText(frame,'unKnown',(50+x1,140+y1-10),cv.FONT_HERSHEY_SIMPLEX,color=(70,57,230),fontScale=1,thickness=2)
             
             #end of face rec....
-            ret,buffer=cv2.imencode('.jpg',frame)
+            ret,buffer=cv.imencode('.jpg',frame)
             frame=buffer.tobytes()
             
         yield(b'--frame\r\n'
                    b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
 
 
-
-
-
 @app.route('/')
 def index():
     camera.release()
     print("home")
-    mycursor.execute('''SELECT asheet.id, student.name, student.roll_no, course.name, teacher.name, asheet.date, asheet.lec_num, asheet.attendance_status FROM attendance_sheet asheet
+    mycursor.execute('''SELECT asheet.id, student.name, student.roll_no, course.name, teacher.name, asheet.date, asheet.lec_num, asheet.attendance_status FROM attendance_sheet asheet 
     INNER JOIN student ON asheet.student_id = student.id
     INNER JOIN course ON asheet.course_id = course.id
     INNER JOIN teacher ON asheet.teacher_id = teacher.id
-    ORDER BY asheet.lec_num DESC''')
+    ORDER BY asheet.id DESC''')
     data = mycursor.fetchall()
     # dbconn.commit()
     return render_template('list.html', attSheet=data)
+@app.route('/today')
+def today():
+    camera.release()
+    now = datetime.datetime.now()
+
+    cur_date = now.strftime('%Y-%m-%d')
+    # cur_date = '2023-06-03'
+
+    mycursor.execute('''SELECT asheet.id, student.name, student.roll_no, course.name, teacher.name, asheet.date, asheet.lec_num, asheet.attendance_status FROM attendance_sheet asheet 
+    INNER JOIN student ON asheet.student_id = student.id
+    INNER JOIN course ON asheet.course_id = course.id
+    INNER JOIN teacher ON asheet.teacher_id = teacher.id
+    WHERE asheet.date = %s
+    ORDER BY asheet.lec_num DESC''',(str(cur_date),))
+    data = mycursor.fetchall()
+    # dbconn.commit()
+    return render_template('list.html', attSheet=data,date=cur_date)
+
+@app.route('/search', methods=['GET', 'POST'])
+def search():
+    camera.release()
+    if request.method == "POST":
+        
+        roll_num = request.form['rollnum']
+        if request.form['select_date']=='':
+            print("now date")
+            now = datetime.datetime.now()
+            cur_date = now.strftime('%Y-%m-%d')
+        # c   ur_date = '2023-06-02'
+        else:
+            cur_date = request.form['select_date']
+        
+        print(roll_num.upper())
+        # print(cur_date)
+        mycursor.execute('''SELECT asheet.id, student.name, student.roll_no, course.name, teacher.name, asheet.date, asheet.lec_num, asheet.attendance_status FROM attendance_sheet asheet 
+        INNER JOIN student ON asheet.student_id = student.id
+        INNER JOIN course ON asheet.course_id = course.id
+        INNER JOIN teacher ON asheet.teacher_id = teacher.id
+        WHERE asheet.date = %s AND student.roll_no=%s
+        ORDER BY asheet.lec_num DESC''',(str(cur_date),roll_num.upper()))
+        data = mycursor.fetchall()
+        # dbconn.commit()
+        return render_template('list.html', attSheet=data,date=cur_date,r_num=roll_num)
 
 
 @app.route('/video')
@@ -267,15 +311,12 @@ def video():
 @app.route('/start_webcam')
 def new():
     print("new")
-    camera=cv2.VideoCapture(0)
+    # camera=cv.VideoCapture(0)
+    now = datetime.datetime.now()
 
     cur_date=now.strftime('%d %b %Y')
     cur_day = now.strftime("%A")
     return render_template('webcam.html' ,date=cur_date, day= cur_day)
-@app.route('/grid')
-def grid():
-
-    return render_template('grid.html' )
 
 
 @app.route('/train')
@@ -300,6 +341,10 @@ def progress():
         yield "data:redirect\n\n"
 
     return Response(generate(), mimetype='text/event-stream')
-    
+
+@app.route('/managing_absent')
+def managing_absent():
+    return render_template('absent.html')
+
 if __name__=="__main__":
     app.run(debug=True)

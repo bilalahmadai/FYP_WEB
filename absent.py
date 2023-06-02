@@ -2,14 +2,8 @@
 from mySQL import *
 import datetime
 now = datetime.datetime.now()
-# cur_time = now.strftime("%H:%M")
 cur_date=now.strftime('%Y-%m-%d')
-# cur_day = now.strftime("%A")
-
-# cur_date='2023-05-07'
-# cur_time = '08:31'
-cur_day="Monday"
-# print(cur_time)                    
+cur_day="Monday"                 
 
 sql="SELECT id FROM student"
 mycursor.execute(sql)
@@ -108,41 +102,44 @@ def FindAbsentStudent(slotNum,rollNum,cur_time):
             
 
 
-sql="SELECT * FROM slot"
-mycursor.execute(sql)
-MySlot_time = mycursor.fetchall()
-# lec_start_time=[]
-lec_off_time=[]
-for time in MySlot_time:
-    # lec_start_time.append(time[2].split('-')[0])
+# sql="SELECT * FROM slot"
+# mycursor.execute(sql)
+# MySlot_time = mycursor.fetchall()
+# # lec_start_time=[]
+# lec_off_time=[]
+# for time in MySlot_time:
+#     # lec_start_time.append(time[2].split('-')[0])
     
-    lec_off_time.append(time[2].split('-')[1])
+#     lec_off_time.append(time[2].split('-')[1])
 
-print(lec_off_time)
+# print(lec_off_time)
 
 # marked_list=[]
 # not_marked=[]
 
-for slot_path_no in range(1,7):
-    marked_list=[]
-    not_marked=[]
-    off_time=lec_off_time[slot_path_no-1]
-    print(f"starting file {slot_path_no:-^50}")
-    path='DummyAttendance/slot_'+str(slot_path_no)+'.csv'
-    with open(path,"r+",newline="\n") as f:
-        AttenList=f.readlines()
-        for line in AttenList:
-            entry=line.split(",")
-            marked_list.append(entry[0])
-    print('marked_list  ',marked_list)
-    print(f"off lecture {lec_off_time[slot_path_no-1]:=^20}")
-    for s_id in student_all_ids:
-        # print(s_id[0])
-        if str(s_id[0]) not in marked_list:
-            not_marked.append(str(s_id[0]))
-            # print("not marked  ",str(s_id[0]))
-            FindAbsentStudent(slot_path_no,str(s_id[0]),off_time)
-        else:
-            print("marked ",str(s_id[0]))
-    print('not_marked  ',not_marked)
+# for slot_path_no in range(1,7):
+#     marked_list=[]
+#     not_marked=[]
+#     off_time=lec_off_time[slot_path_no-1]
+#     print(f"starting file {slot_path_no:-^50}")
+#     path='DummyAttendance/slot_'+str(slot_path_no)+'.csv'
+#     with open(path,"r+",newline="\n") as f:
+#         AttenList=f.readlines()
+#         for line in AttenList:
+#             entry=line.split(",")
+#             marked_list.append(entry[0])
+#     print('marked_list  ',marked_list)
+#     print(f"off lecture {lec_off_time[slot_path_no-1]:=^20}")
+#     for s_id in student_all_ids:
+#         # print(s_id[0])
+#         if str(s_id[0]) not in marked_list:
+#             not_marked.append(str(s_id[0]))
+#             # print("not marked  ",str(s_id[0]))
+#             FindAbsentStudent(slot_path_no,str(s_id[0]),off_time)
+#         else:
+#             print("marked ",str(s_id[0]))
+#     print('not_marked  ',not_marked)
     
+if __name__ == "__main__":
+    print("--------importing file absent.py--------")
+    # rollNumGet(rollno,cur_time)
